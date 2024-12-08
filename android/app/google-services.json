@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "507125280001",
+    "project_id": "device-imei-8a068",
+    "storage_bucket": "device-imei-8a068.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:507125280001:android:adb6252e33b64321743f00",
+        "android_client_info": {
+          "package_name": "com.example.device_imei"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABLU-v5OYB3oUeQN8ldusbVmLs9gsPeYk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
