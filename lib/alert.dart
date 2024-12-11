@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
-showAlert({required BuildContext bContext, required String title, required String content}) {
+showAlert(
+    {required BuildContext bContext,
+    required String title,
+    required String content}) {
   return showDialog(
       context: bContext,
       builder: (BuildContext context) {

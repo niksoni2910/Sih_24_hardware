@@ -7,6 +7,11 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This app require access to the canera.</string>
 
+    <key>NSCameraUsageDescription</key>
+    <string>This app needs camera access to capture photos.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs photos access to get pictures from your library.</string>
+
 
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>

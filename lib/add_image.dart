@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 
 import 'package:image_picker/image_picker.dart';
 
-
 class AddImage extends StatefulWidget {
   const AddImage({super.key});
 
@@ -22,7 +21,7 @@ class _AddImageState extends State<AddImage> {
     try {
       XFile? capturedImage =
           await imagePicker.pickImage(source: ImageSource.camera);
-      
+
       if (capturedImage == null) {
         showAlert(
             bContext: context,
@@ -43,14 +42,15 @@ class _AddImageState extends State<AddImage> {
       }
     } catch (e) {
       showAlert(
-          bContext: context, title: "Error capturing image file", content: e.toString());
+          bContext: context,
+          title: "Error capturing image file",
+          content: e.toString());
     }
   }
 
   _imageFromGallery() async {
     XFile? uploadedImage =
         await imagePicker.pickImage(source: ImageSource.gallery);
-    
 
     if (uploadedImage == null) {
       showAlert(

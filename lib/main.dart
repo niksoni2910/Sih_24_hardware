@@ -1,10 +1,11 @@
-import 'package:device_imei/add_image.dart';
-import 'package:device_imei/get_device_info.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'screens/progress_page.dart';
+import 'widgets/device_info_sheet.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
   runApp(const MyApp());
 }
 
@@ -14,94 +15,162 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'DeviceDNA',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _captureImage() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.camera,
+      preferredCameraDevice:
+          CameraDevice.front, // This ensures front camera usage
+    );
+    if (image != null) {
+      setState(() {
+        _selectedImage = File(image.path);
+      });
+      // Automatically proceed to authentication after capturing
+      _proceedToAuthentication();
+    }
+  }
+
+  void _proceedToAuthentication() {
+    if (_selectedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please take a selfie first')),
+      );
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProgressPage()),
+    );
+  }
+
+  void _showDeviceInfo() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (_, controller) => DeviceInfoSheet(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // return Container(
-    //   decoration: BoxDecoration(
-    //       gradient: LinearGradient(
-    //           begin: Alignment.topLeft,
-    //           end: Alignment.bottomRight,
-    //           colors: [
-    //         Color.fromRGBO(46, 25, 96, 1),
-    //         Color.fromRGBO(93, 16, 73, 1)
-    //       ])),
-    //   child: Scaffold(
-    //       backgroundColor: Colors.transparent,
-    //       body: Center(
-    //         child: Container(
-    //           width: MediaQuery.of(context).size.width,
-    //           child: Column(
-    //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    //               children: [
-    //                 Padding(
-    //                   padding: EdgeInsets.all(30),
-    //                   child: Text(
-    //                     "Image Capture and Upload",
-    //                     style: TextStyle(
-    //                       color: Colors.white,
-    //                       fontSize: 40,
-    //                     ),
-    //                   ),
-    //                 ),
-    //                 Column(
-    //                   children: [
-    //                     Padding(
-    //                       padding: EdgeInsets.symmetric(
-    //                           horizontal: 50, vertical: 30),
-    //                       child: Text(
-    //                         "Add a Picture from gallery or take from camera and upload it to the server. Click Below to add Image",
-    //                         style: TextStyle(color: Colors.white, fontSize: 20),
-    //                       ),
-    //                     ),
-    //                     ElevatedButton(
-    //                       style: ElevatedButton.styleFrom(
-    //                         backgroundColor: Color.fromRGBO(0, 0, 0, 0.1),
-    //                         padding: EdgeInsets.symmetric(
-    //                             vertical: 30, horizontal: 40),
-    //                         shape: RoundedRectangleBorder(
-    //                             borderRadius: BorderRadius.circular(30)),
-    //                       ),
-    //                       child: Text(
-    //                         "Add an Image",
-    //                         style: TextStyle(
-    //                           color: Colors.white,
-    //                           fontSize: 20,
-    //                           fontWeight: FontWeight.w300,
-    //                         ),
-    //                       ),
-    //                       onPressed: () => {
-    //                         Navigator.push(
-    //                             context,
-    //                             MaterialPageRoute(
-    //                                 builder: (context) => AddImage()))
-    //                       },
-    //                     ),
-    //                   ],
-    //                 )
-    //               ]),
-    //         ),
-    //       )),
-    // );
-    return DeviceInfo();
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Text(
+              'Device',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              'DNA',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                color: Colors.blue,
+              ),
+            ),
+            Text(
+              '🧬',
+              style: TextStyle(
+                fontSize: 24,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.info_outline,
+              color: Colors.blue,
+            ),
+            onPressed: _showDeviceInfo,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(20),
+            child: Text(
+              'Secure Your Device Identity',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (_selectedImage != null)
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.file(
+                          _selectedImage!,
+                          height: 200,
+                          width: 200,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: _captureImage,
+                    icon: Icon(Icons.face),
+                    label: Text('Take Selfie to Authenticate'),
+                    style: ElevatedButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

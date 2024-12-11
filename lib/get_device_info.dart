@@ -247,4 +247,3 @@ class _DeviceInfoState extends State<DeviceInfo> {
           TargetPlatform.fuchsia => 'Fuchsia Device Info',
         };
 }
-
