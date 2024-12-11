@@ -27,7 +27,7 @@ class _AddImageState extends State<AddImage> {
         showAlert(
             bContext: context,
             title: "Error choosing file",
-            content: "No file was selected");
+            content: "No image was captured");
       } else {
         final File imagePath = File(capturedImage.path);
         setState(() {
