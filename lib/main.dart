@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'screens/progress_page.dart';
+// import 'screens/progress_page.dart';
 import 'widgets/device_info_sheet.dart';
 
 void main() {
@@ -36,6 +36,35 @@ class _MyHomePageState extends State<MyHomePage> {
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
 
+  // Future<void> _captureImage() async {
+  //   final XFile? image = await _picker.pickImage(
+  //     source: ImageSource.camera,
+  //     preferredCameraDevice:
+  //         CameraDevice.front, // This ensures front camera usage
+  //   );
+  //   if (image != null) {
+  //     setState(() {
+  //       _selectedImage = File(image.path);
+  //     });
+  //     // Automatically proceed to authentication after capturing
+  //     _proceedToAuthentication();
+  //   }
+  // }
+
+  void _proceedToAuthentication() {
+    if (_selectedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please take a selfie first')),
+      );
+      return;
+    }
+    // TODO temp for the thing to run
+    // Navigator.push(
+    // context,
+    // MaterialPageRoute(builder: (context) => ProgressPage()),
+    // );
+  }
+
   Future<void> _captureImage() async {
     final XFile? image = await _picker.pickImage(
       source: ImageSource.camera,
@@ -46,22 +75,9 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _selectedImage = File(image.path);
       });
-      // Automatically proceed to authentication after capturing
-      _proceedToAuthentication();
+      // Commenting out the automatic navigation
+      // _proceedToAuthentication();
     }
-  }
-
-  void _proceedToAuthentication() {
-    if (_selectedImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please take a selfie first')),
-      );
-      return;
-    }
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ProgressPage()),
-    );
   }
 
   void _showDeviceInfo() {
