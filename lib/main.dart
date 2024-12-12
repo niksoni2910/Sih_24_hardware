@@ -1,11 +1,16 @@
+import 'package:device_dna/ecc_channel.dart';
+import 'package:device_dna/get_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 // import 'screens/progress_page.dart';
 import 'widgets/device_info_sheet.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final keys = await ECCKeyManager.getKeys();
+  print('Public Key: ${keys['publicKey']}');
+  print('Private Key: ${keys['privateKey']}');
   runApp(const MyApp());
 }
 
@@ -35,6 +40,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
+  String private = "";
+  String public = "";
 
   // Future<void> _captureImage() async {
   //   final XFile? image = await _picker.pickImage(
@@ -148,6 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
+          
           Expanded(
             child: Center(
               child: Column(

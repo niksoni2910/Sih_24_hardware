@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:device_imei/display_image.dart';
+
+import 'package:device_dna/display_image.dart';
 
 import 'alert.dart';
 import 'package:flutter/cupertino.dart';
