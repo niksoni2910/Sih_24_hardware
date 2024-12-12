@@ -14,6 +14,7 @@ void main() async {
   final keys = await ECCKeyManager.getKeys();
   print('Public Key: ${keys['publicKey']}');
   print('Private Key: ${keys['privateKey']}');
+
   runApp(const MyApp());
 }
 
@@ -67,8 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
       deviceInfo = _readIosDeviceInfo(await deviceInfoPlugin.iosInfo);
     }
     setState(() {
-      _deviceInfoString =
-          deviceInfo.entries.map((e) => '${e.key}:${e.value}').join(', ');
+      _deviceInfoString = deviceInfo.entries.map((e) => '${e.value}').join();
     });
   }
 
