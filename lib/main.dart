@@ -12,7 +12,7 @@ void main() async {
   final keys = await ECCKeyManager.getKeys();
   print('Public Key: ${keys['publicKey']}');
   print('Private Key: ${keys['privateKey']}');
-  
+
   runApp(const MyApp());
 }
 
@@ -227,8 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
       deviceInfo = _readIosDeviceInfo(await deviceInfoPlugin.iosInfo);
     }
     setState(() {
-      _deviceInfoString =
-          deviceInfo.entries.map((e) => '${e.value}').join();
+      _deviceInfoString = deviceInfo.entries.map((e) => '${e.value}').join();
     });
   }
 
@@ -370,58 +369,58 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Center(
-                      child: Column(
-          children: [
-            const SizedBox(height: 20),
-            if (_selectedImage != null)
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.file(
-                    _selectedImage!,
-                    height: 200,
-                    width: 200,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton.icon(
-                onPressed: _captureImage,
-                icon: const Icon(Icons.face),
-                label: const Text('Take Selfie to Authenticate'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 30, vertical: 15),
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            if (_selectedImage != null)
-              ElevatedButton.icon(
-                onPressed: _navigateToKeyInfoPage,
-                icon: const Icon(Icons.arrow_forward),
-                label: const Text('Proceed to Key Info'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 30, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-          ],
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                if (_selectedImage != null)
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(
+                        _selectedImage!,
+                        height: 200,
+                        width: 200,
+                        fit: BoxFit.cover,
                       ),
-                    )
+                    ),
+                  ),
+                const SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton.icon(
+                    onPressed: _captureImage,
+                    icon: const Icon(Icons.face),
+                    label: const Text('Take Selfie to Authenticate'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 15),
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                if (_selectedImage != null)
+                  ElevatedButton.icon(
+                    onPressed: _navigateToKeyInfoPage,
+                    icon: const Icon(Icons.arrow_forward),
+                    label: const Text('Proceed to Key Info'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          )
         ],
       ),
     );

@@ -1,52 +1,74 @@
 import Flutter
-import UIKit
 import Security
+import UIKit
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
-  override func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-  ) -> Bool {
-    let controller: FlutterViewController = window?.rootViewController as! FlutterViewController
-    let channel = FlutterMethodChannel(name: "native_ecc", binaryMessenger: controller.binaryMessenger)
+    override func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        let controller: FlutterViewController = window?.rootViewController as! FlutterViewController
+        let channel = FlutterMethodChannel(
+            name: "native_ecc", binaryMessenger: controller.binaryMessenger)
 
-    channel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
-      if call.method == "generateKeyPair" {
-        let keyPair = self.generateECCKeyPair()
-        result(keyPair)
-      } else {
-        result(FlutterMethodNotImplemented)
-      }
+        channel.setMethodCallHandler {
+            [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
+            guard let self = self else { return }
+
+            if call.method == "generateKeyPair" {
+                do {
+                    let keyPair = try self.generateECCKeyPair()
+                    result(keyPair)
+                } catch {
+                    result(
+                        FlutterError(
+                            code: "UNAVAILABLE",
+                            message: "Key pair generation failed.",
+                            details: error.localizedDescription))
+                }
+            } else {
+                result(FlutterMethodNotImplemented)
+            }
+        }
+
+        GeneratedPluginRegistrant.register(with: self)
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
+    private func generateECCKeyPair() throws -> [String: String] {
+        let tag = "com.example.device_imei.keypair".data(using: .utf8)!
+        let attributes: [String: Any] = [
+            kSecAttrKeyType as String: kSecAttrKeyTypeECSECPrimeRandom,
+            kSecAttrKeySizeInBits as String: 256,
+            kSecPrivateKeyAttrs as String: [
+                kSecAttrIsPermanent as String: false,
+                kSecAttrApplicationTag as String: tag,
+            ],
+        ]
 
-  private func generateECCKeyPair() -> [String: String] {
-    let attributes: [String: Any] = [
-      kSecAttrKeyType as String: kSecAttrKeyTypeEC,
-      kSecAttrKeySizeInBits as String: 256,
-      kSecPrivateKeyAttrs as String: [
-        kSecAttrIsPermanent as String: false
-      ]
-    ]
+        var error: Unmanaged<CFError>?
+        guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
+            throw error!.takeRetainedValue() as Error
+        }
 
-    var error: Unmanaged<CFError>?
-    guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
-      return ["error": "Key generation failed"]
+        guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
+            throw NSError(
+                domain: "KeyGeneration", code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Failed to get public key"])
+        }
+
+        guard let privateKeyData = SecKeyCopyExternalRepresentation(privateKey, &error) as Data?,
+            let publicKeyData = SecKeyCopyExternalRepresentation(publicKey, &error) as Data?
+        else {
+            throw NSError(
+                domain: "KeyGeneration", code: -2,
+                userInfo: [NSLocalizedDescriptionKey: "Failed to export keys"])
+        }
+
+        return [
+            "privateKey": privateKeyData.base64EncodedString(),
+            "publicKey": publicKeyData.base64EncodedString(),
+        ]
     }
-
-    guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
-      return ["error": "Public key generation failed"]
-    }
-
-    let privateKeyData = SecKeyCopyExternalRepresentation(privateKey, &error)! as Data
-    let publicKeyData = SecKeyCopyExternalRepresentation(publicKey, &error)! as Data
-
-    return [
-      "privateKey": privateKeyData.base64EncodedString(),
-      "publicKey": publicKeyData.base64EncodedString()
-    ]
-  }
 }
