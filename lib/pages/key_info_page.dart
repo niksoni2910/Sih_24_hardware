@@ -1,12 +1,11 @@
 import 'dart:io';
-import 'dart:convert'; // Import to use base64 encoding
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class KeyInfoPage extends StatefulWidget {
   final String publicKey;
   final String deviceInfo;
   final File image;
-
 
   const KeyInfoPage({
     Key? key,
@@ -25,23 +24,21 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
   @override
   void initState() {
     super.initState();
-    // Convert image to base64 when the widget is initialized
     imageBase64 = base64Encode(widget.image.readAsBytesSync());
   }
 
   @override
   Widget build(BuildContext context) {
-    // Get the height of the screen
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Key Info',
-          style: TextStyle(color: Colors.white), // White text color for app bar title
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.blue, // Blue app bar background
-        iconTheme: IconThemeData(color: Colors.white), // White color for back arrow
+        backgroundColor: Colors.blue,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -49,8 +46,8 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.blue.withOpacity(0.1), // Light blue color for gradient start
-              Colors.white, // White color for gradient end
+              Colors.blue.withOpacity(0.1),
+              Colors.white,
             ],
           ),
         ),
@@ -60,12 +57,11 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Public Key Section
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Colors.white, // White container background
-                    borderRadius: BorderRadius.circular(12), // Rounded corners
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.blue.withOpacity(0.2),
@@ -83,7 +79,7 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: Colors.blue, // Blue color for headers
+                          color: Colors.blue,
                         ),
                       ),
                       SizedBox(height: 10),
@@ -95,8 +91,6 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
                   ),
                 ),
                 SizedBox(height: 20),
-
-                // Concatenated Data Section
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
@@ -119,21 +113,20 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color : Colors.blue
+                          color: Colors.blue,
                         ),
                       ),
                       SizedBox(height: 10),
-                      // Box for device info and base64 encoded image
                       Container(
-                        height: screenHeight * 0.3, // Set height to 30% of screen height
+                        height: screenHeight * 0.3,
                         padding: EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.1), // Light gray background
+                          color: Colors.blue.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: SingleChildScrollView(
                           child: Text(
-                            '${widget.deviceInfo}\n\n$imageBase64', // Concatenate device info and base64 image string
+                            '${widget.deviceInfo}\n\n$imageBase64',
                             style: TextStyle(color: Colors.black54),
                           ),
                         ),
@@ -142,8 +135,6 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
                   ),
                 ),
                 SizedBox(height: 20),
-
-                // Selected Image Section
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
@@ -166,7 +157,7 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: Colors.blue, // Blue for header text
+                          color: Colors.blue,
                         ),
                       ),
                       SizedBox(height: 10),

@@ -19,7 +19,6 @@ class _ProgressPageState extends State<ProgressPage> {
   }
 
   void _startProgress() async {
-    // Simulate upload progress
     for (int i = 0; i <= 100; i++) {
       await Future.delayed(Duration(milliseconds: 20));
       setState(() {
@@ -27,7 +26,6 @@ class _ProgressPageState extends State<ProgressPage> {
       });
     }
 
-    // Simulate encryption progress
     for (int i = 0; i <= 100; i++) {
       await Future.delayed(Duration(milliseconds: 20));
       setState(() {
@@ -35,7 +33,6 @@ class _ProgressPageState extends State<ProgressPage> {
       });
     }
 
-    // Simulate sending progress
     for (int i = 0; i <= 100; i++) {
       await Future.delayed(Duration(milliseconds: 20));
       setState(() {
@@ -43,7 +40,6 @@ class _ProgressPageState extends State<ProgressPage> {
       });
     }
 
-    // Show authentication status
     await Future.delayed(Duration(milliseconds: 500));
     setState(() {
       _isAuthenticated = true;

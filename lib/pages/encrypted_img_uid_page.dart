@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;  // Import the encrypt package for encryption
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 class EncryptedImgUIDPage extends StatefulWidget {
   final String deviceInfo;
@@ -32,23 +32,20 @@ class _EncryptedImgUIDPageState extends State<EncryptedImgUIDPage> {
 
   Future<void> _computeHashAndEncrypt() async {
     try {
-      // Step 1: Generate SHA-256 hash
       List<int> deviceInfoData = [...widget.deviceInfo.codeUnits];
       var digest = sha256.convert(deviceInfoData);
       String digestString = digest.toString();
 
-      // Step 2: Generate a random AES key and IV
-      final key = encrypt.Key.fromLength(32);  // AES-256 key (256 bits = 32 bytes)
-      final iv = encrypt.IV.fromLength(16);   // AES block size is 16 bytes (128 bits)
+      final key = encrypt.Key.fromLength(32);
+      final iv = encrypt.IV.fromLength(16);
 
-      // Step 3: Encrypt the digest using AES
-      final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));  // CBC mode for AES encryption
+      final encrypter =
+          encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
       final encrypted = encrypter.encrypt(digestString, iv: iv);
 
-      // Step 4: Update the state with the digest and encrypted hash
       setState(() {
         _digest = digestString;
-        _encryptedHash = encrypted.base64;  // Store the encrypted hash as base64
+        _encryptedHash = encrypted.base64;
       });
     } catch (e) {
       setState(() {
@@ -107,7 +104,8 @@ class _EncryptedImgUIDPageState extends State<EncryptedImgUIDPage> {
               children: [
                 _buildInfoCard(
                   'Device Information',
-                  _buildCopyableText(widget.deviceInfo, 'Device info copied to clipboard'),
+                  _buildCopyableText(
+                      widget.deviceInfo, 'Device info copied to clipboard'),
                 ),
                 const SizedBox(height: 20),
                 _buildInfoCard(
@@ -117,7 +115,8 @@ class _EncryptedImgUIDPageState extends State<EncryptedImgUIDPage> {
                 const SizedBox(height: 20),
                 _buildInfoCard(
                   'Encrypted Hash',
-                  _buildCopyableText(_encryptedHash, 'Encrypted hash copied to clipboard'),
+                  _buildCopyableText(
+                      _encryptedHash, 'Encrypted hash copied to clipboard'),
                 ),
               ],
             ),
