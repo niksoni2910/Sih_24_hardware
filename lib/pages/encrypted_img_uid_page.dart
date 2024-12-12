@@ -1,9 +1,8 @@
 import 'dart:io';
-import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
+import '../services/encryption.dart'; // Import the encryption service
 
 class EncryptedImgUIDPage extends StatefulWidget {
   final String deviceInfo;
@@ -23,6 +22,7 @@ class _EncryptedImgUIDPageState extends State<EncryptedImgUIDPage> {
   String _digest = '';
   String _encryptedHash = '';
   bool _hashCopied = false;
+  final EncryptionService _encryptionService = EncryptionService();
 
   @override
   void initState() {
@@ -32,22 +32,20 @@ class _EncryptedImgUIDPageState extends State<EncryptedImgUIDPage> {
 
   Future<void> _computeHashAndEncrypt() async {
     try {
+      // Generate SHA-256 hash of device info
       List<int> deviceInfoData = [...widget.deviceInfo.codeUnits];
       var digest = sha256.convert(deviceInfoData);
       String digestString = digest.toString();
 
-      final key = encrypt.Key.fromLength(32);
-      final iv = encrypt.IV.fromLength(16);
-
-      final encrypter =
-          encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
-      final encrypted = encrypter.encrypt(digestString, iv: iv);
+      // Encrypt the hash using our encryption service
+      String encryptedData = _encryptionService.encryptData(digestString);
 
       setState(() {
         _digest = digestString;
-        _encryptedHash = encrypted.base64;
+        _encryptedHash = encryptedData;
       });
     } catch (e) {
+      print('Error in _computeHashAndEncrypt: $e');
       setState(() {
         _digest = 'Error generating digest: $e';
         _encryptedHash = 'Error encrypting digest';
@@ -55,6 +53,7 @@ class _EncryptedImgUIDPageState extends State<EncryptedImgUIDPage> {
     }
   }
 
+  // Rest of the code remains the same...
   void _copyToClipboard(String text, String message) {
     Clipboard.setData(ClipboardData(text: text));
     setState(() {
