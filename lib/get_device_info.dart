@@ -39,7 +39,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
             _readWindowsDeviceInfo(await deviceInfoPlugin.windowsInfo),
           TargetPlatform.macOS =>
             _readMacOsDeviceInfo(await deviceInfoPlugin.macOsInfo),
-          TargetPlatform.fuchsia => <String, dynamic>{
+          TargetPlatform.fuchsia => <String, dynamic> {
               'Error:': 'Fuchsia platform isn\'t supported'
             },
         };
@@ -58,7 +58,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
   }
 
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
-    return <String, dynamic>{
+    return <String, dynamic> {
       'version.securityPatch': build.version.securityPatch,
       'version.sdkInt': build.version.sdkInt,
       'version.release': build.version.release,
@@ -86,12 +86,11 @@ class _DeviceInfoState extends State<DeviceInfo> {
       'isPhysicalDevice': build.isPhysicalDevice,
       'systemFeatures': build.systemFeatures,
       'serialNumber': build.serialNumber,
-      // 'isLowRamDevice': build.isLowRamDevice,
     };
   }
 
   Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {
-    return <String, dynamic>{
+    return <String, dynamic> {
       'name': data.name,
       'systemName': data.systemName,
       'systemVersion': data.systemVersion,
@@ -108,7 +107,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
   }
 
   Map<String, dynamic> _readLinuxDeviceInfo(LinuxDeviceInfo data) {
-    return <String, dynamic>{
+    return <String, dynamic> {
       'name': data.name,
       'version': data.version,
       'id': data.id,
@@ -124,7 +123,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
   }
 
   Map<String, dynamic> _readWebBrowserInfo(WebBrowserInfo data) {
-    return <String, dynamic>{
+    return <String, dynamic> {
       'browserName': data.browserName.name,
       'appCodeName': data.appCodeName,
       'appName': data.appName,
@@ -144,7 +143,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
   }
 
   Map<String, dynamic> _readMacOsDeviceInfo(MacOsDeviceInfo data) {
-    return <String, dynamic>{
+    return <String, dynamic> {
       'computerName': data.computerName,
       'hostName': data.hostName,
       'arch': data.arch,
@@ -162,7 +161,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
   }
 
   Map<String, dynamic> _readWindowsDeviceInfo(WindowsDeviceInfo data) {
-    return <String, dynamic>{
+    return <String, dynamic> {
       'numberOfCores': data.numberOfCores,
       'computerName': data.computerName,
       'systemMemoryInMegabytes': data.systemMemoryInMegabytes,
@@ -196,7 +195,20 @@ class _DeviceInfoState extends State<DeviceInfo> {
     return MaterialApp(
       theme: ThemeData(
         useMaterial3: true,
-        colorSchemeSeed: const Color(0x9f4376f8),
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: AppBarTheme(
+          color: Colors.blue, // Blue app bar
+          titleTextStyle: TextStyle(color: Colors.white), // White text in app bar
+        ),
+        textTheme: TextTheme(
+          bodyText1: TextStyle(color: Colors.black), // Black text color
+          bodyText2: TextStyle(color: Colors.black), // Black text color
+          headline6: TextStyle(color: Colors.white), // White text for headers
+        ),
+        listTileTheme: ListTileThemeData(
+          textColor: Colors.black, // Black text in list tiles
+        ),
       ),
       home: Scaffold(
         appBar: AppBar(
@@ -206,28 +218,25 @@ class _DeviceInfoState extends State<DeviceInfo> {
         body: ListView(
           children: _deviceData.keys.map(
             (String property) {
-              return Row(
-                children: <Widget>[
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      property,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+              return Card(
+                margin: const EdgeInsets.all(10),
+                color: Colors.blue.shade50, // Light blue card background
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(10),
+                  title: Text(
+                    property,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue, // Blue title text
                     ),
                   ),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Text(
-                        '${_deviceData[property]}',
-                        maxLines: 10,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                  subtitle: Text(
+                    '${_deviceData[property]}',
+                    style: TextStyle(color: Colors.black), // Black subtitle text
+                    maxLines: 10,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
+                ),
               );
             },
           ).toList(),

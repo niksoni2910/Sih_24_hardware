@@ -12,9 +12,9 @@ import 'widgets/device_info_sheet.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final keys = await ECCKeyManager.getKeys();
-  print('Public Key: ${keys['publicKey']}');
-  print('Private Key: ${keys['privateKey']}');
-
+  // print('Public Key: ${keys['publicKey']}');
+  // print('Private Key: ${keys['privateKey']}');
+  
   runApp(const MyApp());
 }
 
