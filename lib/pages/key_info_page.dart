@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../services/encryption.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
+
 class KeyInfoPage extends StatefulWidget {
   final String publicKey;
   final String deviceInfo;
@@ -44,6 +45,7 @@ wIDAQAB
     super.initState();
     _initializeData();
   }
+
 
   Future<void> _initializeData() async {
     // try {
@@ -119,7 +121,9 @@ wIDAQAB
       encryptedDataString = encryptedData.base64;  // This is the AES-encrypted data
       encryptedKeyString = encryptedKey.base64;    // This is the RSA-encrypted AES key
       imageBase64 = imgBase64;
+      isLoading=false;
     });
+
 
     print('DEBUG: Encryption completed');
     // print('DEBUG: Encrypted data length: ${encryptedDataString?.length}');

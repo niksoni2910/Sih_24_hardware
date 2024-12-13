@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
     final keys = await ECCKeyManager.getKeys();
     _publicKey = keys['publicKey'] ?? '';
     _deviceInfoString = await DeviceInfoService.getDeviceInfoString();
+    print(_deviceInfoString);
     setState(() {});
   }
 
@@ -67,6 +68,8 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _combinedHash = hash;
     });
+    final keys = await ECCKeyManager.getKeys();
+    _publicKey = keys['publicKey'] ?? '';
 
     Navigator.push(
       context,
@@ -74,6 +77,7 @@ class _HomePageState extends State<HomePage> {
         builder: (context) => EncryptedImgUIDPage(
           deviceInfo: _deviceInfoString,
           image: _selectedImage!,
+          publicKey: _publicKey,
         ),
       ),
     );
@@ -183,7 +187,7 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: _captureImage,
-                    icon: const Icon(Icons.face),
+                    icon: const Icon(Icons.face,color: Colors.white,),
                     label: const Text('Take Selfie to Authenticate'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
@@ -199,8 +203,8 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 20),
                     ElevatedButton.icon(
                       onPressed: _submitImage,
-                      icon: const Icon(Icons.info_outline),
-                      label: const Text('Verification Details'),
+                      icon: const Icon(Icons.info_outline,color: Colors.white,),
+                      label: const Text('Verification Details',),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.indigo,
                         foregroundColor: Colors.white,
@@ -212,20 +216,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: _navigateToKeyInfoPage,
-                      icon: const Icon(Icons.arrow_forward),
-                      label: const Text('Proceed to Key Info'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                    ),
+
                   ],
                 ],
               ),
