@@ -20,9 +20,9 @@ class KeyInfoPage extends StatefulWidget {
 }
 
 class _KeyInfoPageState extends State<KeyInfoPage> {
-  late String imageBase64;
-  late String concatenatedData;
-  late String encryptedData;
+  String  imageBase64 = "";
+  String concatenatedData = "";
+  String encryptedData = "";
   final EncryptionService _encryptionService = EncryptionService();
 
   @override
@@ -33,13 +33,16 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
 
   Future<void> _initializeData() async {
     try {
-      String concatenatedData = '${widget.deviceInfo}~$imageBase64';
+      String imgBase64 = base64Encode(widget.image.readAsBytesSync());
+      String concated = '${widget.deviceInfo}~$imageBase64';
 
       // Encrypt the data
-      String encrypted = await EncryptionService.encryptData(concatenatedData);
+      String encrypted = await EncryptionService.encryptData(concated);
 
       setState(() {
         encryptedData = encrypted;
+        concatenatedData = concated;
+        imageBase64 = imgBase64;
       });
 
       print('DEBUG: Encryption completed');
@@ -156,7 +159,7 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
                         ),
                         child: SingleChildScrollView(
                           child: Text(
-                            concatenatedData,
+                            "${widget.deviceInfo}\n\n" + imageBase64,
                             style: const TextStyle(color: Colors.black54),
                           ),
                         ),

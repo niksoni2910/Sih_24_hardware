@@ -40,6 +40,7 @@ class _EncryptedImgUIDPageState extends State<EncryptedImgUIDPage> {
 
       setState(() {
         _encryptedHash = encryptedData;
+        _digest = digestString;
       });
 
       print('DEBUG: Encryption completed');
