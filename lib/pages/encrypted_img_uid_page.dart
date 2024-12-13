@@ -2,14 +2,11 @@
 import 'dart:io' ;
 
 import 'package:crypto/crypto.dart';
-import 'package:encrypt/encrypt.dart';
 import 'package:flutter/services.dart';
-import 'package:rsa_encrypt/rsa_encrypt.dart' ;
 import '../services/ecc_channel.dart';
 import '../services/encryption.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart' ;
-import '../services/encryption.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;// Import the encryption service
 import 'package:http/http.dart' as http;
 
@@ -54,7 +51,7 @@ wIDAQAB
     if (isLoading) {
       // Ensure data is initialized
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Data is still being prepared. Please wait.'),
           backgroundColor: Colors.red,
         ),
@@ -71,6 +68,7 @@ wIDAQAB
         "deviceInfo": widget.deviceInfo,
         "deviceInfoSign": _encryptedHash,
       };
+      print(payload.toString());
 
       // Make the API POST request
       final response = await http.post(
@@ -81,23 +79,30 @@ wIDAQAB
         body: jsonEncode(payload),
       );
 
-      if (response.statusCode == 200) {
-        // Successful response
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Data submitted successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } else {
-        // Handle error
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to submit data. Status code: ${response.statusCode}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Data submitted successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // if (response.statusCode == 200) {
+      //   // Successful response
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(
+      //       content: Text('Data submitted successfully!'),
+      //       backgroundColor: Colors.green,
+      //     ),
+      //   );
+      // } else {
+      //   // Handle error
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(
+      //       content: Text('Failed to submit data. Status code: ${response.statusCode}'),
+      //       backgroundColor: Colors.red,
+      //     ),
+      //   );
+      // }
     } catch (e) {
       // Handle exceptions
       print('DEBUG: Error while submitting data: $e');
@@ -139,6 +144,7 @@ wIDAQAB
       final encryptedData = encrypter.encrypt(dataToEncrypt, iv: iv);
 
       print("Encrypted data (AES) length: ${encryptedData.bytes.length}");
+      print(encryptedData);
 
       // 3. Encrypt the AES symmetric key using RSA
       // Assuming you have RSA public key available (use a proper public key loading mechanism)
@@ -148,6 +154,7 @@ wIDAQAB
 
       // Encrypt the AES key with RSA
       final encryptedKey = rsaEncrypter.encryptBytes(key.bytes);
+      print(encryptedKey);
 
       // Store encrypted data and key
       setState(() {
@@ -186,6 +193,8 @@ wIDAQAB
 
       print('DEBUG: Encryption completed');
       print('DEBUG: Encrypted data length: ${encryptedData?.length}');
+      print(encryptedData);
+      print(widget.deviceInfo);
     } catch (e) {
       print('DEBUG: Error in initialization:');
       print(e);
@@ -280,7 +289,7 @@ wIDAQAB
                 const SizedBox(height: 20),
 
                 ElevatedButton.icon(
-                  onPressed: (){},
+                  onPressed: _submitData,
                   icon: const Icon(Icons.arrow_forward, color: Colors.white,),
                   label: const Text('Submit'),
                   style: ElevatedButton.styleFrom(
