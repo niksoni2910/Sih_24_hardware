@@ -47,7 +47,7 @@ vYO2hZT2r0vhdYEnQehHD8QjMckChFZEK69t6FgbsNjbbR5pM25AWxHg5HOf+ZgF
 wIDAQAB
 -----END PUBLIC KEY-----''';
 
-  final String apiUrl = "https://example.com/api/send-data"; // Replace with your API endpoint
+  final String apiUrl = "http://192.168.137.73:3000/api/send-data"; // Replace with your API endpoint
 
   // Function to call the API
   Future<void> _submitData() async {
@@ -55,7 +55,7 @@ wIDAQAB
       // Ensure data is initialized
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Data is still being prepared. Please wait.'),
+          content: Text('Data is still being prrepared. Please wait.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -280,7 +280,7 @@ wIDAQAB
                 const SizedBox(height: 20),
 
                 ElevatedButton.icon(
-                  onPressed: (){},
+                  onPressed: _submitData,
                   icon: const Icon(Icons.arrow_forward, color: Colors.white,),
                   label: const Text('Submit'),
                   style: ElevatedButton.styleFrom(
