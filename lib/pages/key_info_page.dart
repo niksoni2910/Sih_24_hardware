@@ -21,6 +21,7 @@ class KeyInfoPage extends StatefulWidget {
 }
 
 class _KeyInfoPageState extends State<KeyInfoPage> {
+  bool isLoading = true;
   String  imageBase64 = "";
   // String concatenatedData = "";
   // String encryptedData = "";
@@ -159,7 +160,9 @@ wIDAQAB
           ),
         ),
         child: SingleChildScrollView(
-          child: Padding(
+          child:
+          isLoading ? const Center(child: CircularProgressIndicator()) :
+          Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
