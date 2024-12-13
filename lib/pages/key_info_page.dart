@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/encryption.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 class KeyInfoPage extends StatefulWidget {
   final String publicKey;
@@ -21,9 +22,21 @@ class KeyInfoPage extends StatefulWidget {
 
 class _KeyInfoPageState extends State<KeyInfoPage> {
   String  imageBase64 = "";
-  String concatenatedData = "";
-  String encryptedData = "";
+  // String concatenatedData = "";
+  // String encryptedData = "";
+  String encryptedDataString = "";  // This is the AES-encrypted data
+  String encryptedKeyString = "";
   final EncryptionService _encryptionService = EncryptionService();
+  String rsaPublicKeyPem = '''-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7tO2w97gC7b7E2aBvYDQ
+H5Hb6iFdfdJ9XeM7h9/O2n15+0tZz6W5tDCb4cq5RYQROVwdV/4RbrkNRGJ0qzp+
+R1cV79rB2bZ7Ws5Qfbpg9mwvwfKopk22mbC3gOeW6O3a+fRUHpGLUpiEKtvVqfOC
++IkpNnt6z+rLKFmlgPOojSldp9y8vH+mRO8NwtwFDHiMP3e0qAC8UQwJ0rpX4v5+a
+z8l6U3XJwF1KKMEni8v0Vdd0q6orffvFJh/FSPwZkJ7yn7OrU4wJg2pXUSOhjF9c
+vYO2hZT2r0vhdYEnQehHD8QjMckChFZEK69t6FgbsNjbbR5pM25AWxHg5HOf+ZgF
+wIDAQAB
+-----END PUBLIC KEY-----''';
+
 
   @override
   void initState() {
@@ -32,28 +45,93 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
   }
 
   Future<void> _initializeData() async {
+    // try {
+    //   // String imgBase64 = base64Encode(widget.image.readAsBytesSync());
+    //   // Convert image to base64
+    //   String imgBase64 = base64Encode(widget.image.readAsBytesSync());
+    //   print("Imagebase64 length :::: ${imgBase64.length}");
+    //   // Split base64 string into chunks of 256 characters
+    //   List<String> chunks = [];
+    //   int chunkSize = 244;
+    //   for (var i = 0; i < imgBase64.length; i += chunkSize) {
+    //     int end = (i + chunkSize < imgBase64.length) ? i + chunkSize : imgBase64.length;
+    //     chunks.add(imgBase64.substring(i, end));
+    //   }
+
+    //   print('DEBUG: Number of chunks created: ${chunks.length}');
+      
+    //   // Encrypt each chunk and combine with device info
+    //   List<String> encryptedChunks = [];
+    //   for (int i = 0; i < chunks.length; i++) {
+    //     // Add chunk index to ensure correct order during decryption
+    //     String encrypted = await EncryptionService.encryptData(chunks[i]);
+    //     encryptedChunks.add(encrypted);
+    //     print('DEBUG: Chunk $i encrypted successfully');
+    //   }
+    //   // Encrypt the data
+    //   // String encrypted = await EncryptionService.encryptData(concated);
+
+    //   setState(() {
+    //     encryptedData = encryptedChunks[0];
+    //     concatenatedData = '${widget.deviceInfo}~$imageBase64';
+    //     imageBase64 = imgBase64;
+    //   });
+
+    //   print('DEBUG: Encryption completed');
+    //   print('DEBUG: Encrypted data length: ${encryptedData?.length}');
+    // } catch (e) {
+    //   print('DEBUG: Error in initialization:');
+    //   print(e);
+    //   setState(() {
+    //     encryptedData = 'Error processing data: $e';
+    //   });
+    // }
     try {
-      String imgBase64 = base64Encode(widget.image.readAsBytesSync());
-      String concated = '${widget.deviceInfo}~$imageBase64';
+    // Convert image to base64
+    String imgBase64 = base64Encode(widget.image.readAsBytesSync());
+    print("Imagebase64 length :::: ${imgBase64.length}");
+    
+    // Concatenate device info and image data
+    String dataToEncrypt = '${widget.deviceInfo}~$imgBase64';
 
-      // Encrypt the data
-      String encrypted = await EncryptionService.encryptData(concated);
+    // 1. Generate a random AES symmetric key
+    final key = encrypt.Key.fromSecureRandom(32); // AES-256
+    final iv = encrypt.IV.fromLength(16); // AES block size (128 bits)
 
-      setState(() {
-        encryptedData = encrypted;
-        concatenatedData = concated;
-        imageBase64 = imgBase64;
-      });
+    // 2. Encrypt the concatenated data (device info + image data) using AES
+    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
+    final encryptedData = encrypter.encrypt(dataToEncrypt, iv: iv);
+    
+    print("Encrypted data (AES) length: ${encryptedData.bytes.length}");
 
-      print('DEBUG: Encryption completed');
-      print('DEBUG: Encrypted data length: ${encryptedData?.length}');
-    } catch (e) {
-      print('DEBUG: Error in initialization:');
-      print(e);
-      setState(() {
-        encryptedData = 'Error processing data: $e';
-      });
-    }
+    // 3. Encrypt the AES symmetric key using RSA
+    // Assuming you have RSA public key available (use a proper public key loading mechanism)
+    // String rsaPublicKeyPem = "YOUR_RSA_PUBLIC_KEY"; // replace with your actual RSA public key
+    final dynamic publicKey = encrypt.RSAKeyParser().parse(rsaPublicKeyPem);
+    final rsaEncrypter = encrypt.Encrypter(encrypt.RSA(publicKey: publicKey));
+
+    // Encrypt the AES key with RSA
+    final encryptedKey = rsaEncrypter.encryptBytes(key.bytes);
+    
+    // Store encrypted data and key
+    setState(() {
+      encryptedDataString = encryptedData.base64;  // This is the AES-encrypted data
+      encryptedKeyString = encryptedKey.base64;    // This is the RSA-encrypted AES key
+      imageBase64 = imgBase64;
+    });
+
+    print('DEBUG: Encryption completed');
+    // print('DEBUG: Encrypted data length: ${encryptedDataString?.length}');
+    // print('DEBUG: Encrypted AES key length: ${encryptedKeyString?.length}');
+    
+  } catch (e) {
+    print('DEBUG: Error in initialization:');
+    print(e);
+    // setState(() {
+    //   encryptedDataString = 'Error processing data: $e';
+    //   encryptedKeyString = 'Error processing data: $e';
+    // });
+  }
   }
 
   @override
@@ -206,7 +284,7 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
                         ),
                         child: SingleChildScrollView(
                           child: Text(
-                            encryptedData,
+                            encryptedKeyString + "~" + encryptedDataString,
                             style: const TextStyle(color: Colors.black54),
                           ),
                         ),
