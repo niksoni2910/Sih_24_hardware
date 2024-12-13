@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:crypto/crypto.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/encryption.dart'; // Import the encryption service
@@ -34,7 +35,7 @@ class _EncryptedImgUIDPageState extends State<EncryptedImgUIDPage> {
     try {
       // Generate SHA-256 hash of device info
       List<int> deviceInfoData = [...widget.deviceInfo.codeUnits];
-      var digest = sha256.convert(deviceInfoData);
+      var digest = base64Encode(deviceInfoData);
       String digestString = digest.toString();
 
       // Encrypt the hash using our encryption service

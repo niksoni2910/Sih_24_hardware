@@ -35,7 +35,7 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
       imageBase64 = base64Encode(widget.image.readAsBytesSync());
 
       // Concatenate data
-      concatenatedData = '${widget.deviceInfo}\n\n$imageBase64';
+      concatenatedData = '${widget.deviceInfo}~$imageBase64';
 
       // Encrypt the concatenated data
       encryptedData = _encryptionService.encryptData(concatenatedData);

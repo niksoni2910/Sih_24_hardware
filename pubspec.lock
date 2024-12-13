@@ -376,6 +376,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
+  leb128:
+    dependency: "direct main"
+    description:
+      name: leb128
+      sha256: "610924e5a56626b5a003df4e59f71c042439eb3f742fc588f2638a12f2d20b6a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   lints:
     dependency: transitive
     description:
