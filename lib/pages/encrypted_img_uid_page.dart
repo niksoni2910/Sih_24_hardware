@@ -44,7 +44,7 @@ vYO2hZT2r0vhdYEnQehHD8QjMckChFZEK69t6FgbsNjbbR5pM25AWxHg5HOf+ZgF
 wIDAQAB
 -----END PUBLIC KEY-----''';
 
-  final String apiUrl = "https://example.com/api/send-data"; // Replace with your API endpoint
+  final String apiUrl = "http://192.168.137.73:3000/api/send-data"; // Replace with your API endpoint
 
   // Function to call the API
   Future<void> _submitData() async {
