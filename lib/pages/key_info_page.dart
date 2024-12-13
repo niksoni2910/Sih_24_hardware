@@ -28,24 +28,28 @@ class _KeyInfoPageState extends State<KeyInfoPage> {
   @override
   void initState() {
     super.initState();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
     try {
-      print('DEBUG: Starting KeyInfoPage initialization');
+      String concatenatedData = '${widget.deviceInfo}~$imageBase64';
 
-      // Convert image to base64
-      imageBase64 = base64Encode(widget.image.readAsBytesSync());
+      // Encrypt the data
+      String encrypted = await EncryptionService.encryptData(concatenatedData);
 
-      // Concatenate data
-      concatenatedData = '${widget.deviceInfo}~$imageBase64';
-
-      // Encrypt the concatenated data
-      encryptedData = _encryptionService.encryptData(concatenatedData);
+      setState(() {
+        encryptedData = encrypted;
+      });
 
       print('DEBUG: Encryption completed');
-      print('DEBUG: Encrypted data length: ${encryptedData.length}');
+      print('DEBUG: Encrypted data length: ${encryptedData?.length}');
     } catch (e) {
-      print('DEBUG: Error in KeyInfoPage initialization:');
+      print('DEBUG: Error in initialization:');
       print(e);
-      encryptedData = 'Error processing data: $e';
+      setState(() {
+        encryptedData = 'Error processing data: $e';
+      });
     }
   }
 

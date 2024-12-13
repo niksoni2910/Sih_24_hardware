@@ -33,26 +33,48 @@ class _EncryptedImgUIDPageState extends State<EncryptedImgUIDPage> {
 
   Future<void> _computeHashAndEncrypt() async {
     try {
-      // Generate SHA-256 hash of device info
       List<int> deviceInfoData = [...widget.deviceInfo.codeUnits];
-      var digest = base64Encode(deviceInfoData);
+      var digest = sha256.convert(deviceInfoData);
       String digestString = digest.toString();
-
-      // Encrypt the hash using our encryption service
-      String encryptedData = _encryptionService.encryptData(digestString);
+      String encryptedData = await EncryptionService.encryptData(digestString);
 
       setState(() {
-        _digest = digestString;
         _encryptedHash = encryptedData;
       });
+
+      print('DEBUG: Encryption completed');
+      print('DEBUG: Encrypted data length: ${encryptedData?.length}');
     } catch (e) {
-      print('Error in _computeHashAndEncrypt: $e');
+      print('DEBUG: Error in initialization:');
+      print(e);
       setState(() {
-        _digest = 'Error generating digest: $e';
-        _encryptedHash = 'Error encrypting digest';
+        _encryptedHash = 'Error processing data: $e';
       });
     }
   }
+
+  // Future<void> _computeHashAndEncrypt() async {
+  //   try {
+  //     // Generate SHA-256 hash of device info
+  //     List<int> deviceInfoData = [...widget.deviceInfo.codeUnits];
+  //     var digest = base64Encode(deviceInfoData);
+  //     String digestString = digest.toString();
+
+  //     // Encrypt the hash using our encryption service
+  //     String encryptedData = _encryptionService.encryptData(digestString);
+
+  //     setState(() {
+  //       _digest = digestString;
+  //       _encryptedHash = encryptedData;
+  //     });
+  //   } catch (e) {
+  //     print('Error in _computeHashAndEncrypt: $e');
+  //     setState(() {
+  //       _digest = 'Error generating digest: $e';
+  //       _encryptedHash = 'Error encrypting digest';
+  //     });
+  //   }
+  // }
 
   // Rest of the code remains the same...
   void _copyToClipboard(String text, String message) {
