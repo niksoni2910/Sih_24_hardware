@@ -53,7 +53,7 @@ wIDAQAB
     if (isLoading) {
       // Ensure data is initialized
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Data is still being prepared. Please wait.'),
           backgroundColor: Colors.red,
         ),
