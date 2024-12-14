@@ -22,6 +22,7 @@ dependencies:
   rsa_encrypt: ^2.0.0
   http: ^1.2.2
   app_integrity_checker: ^1.0.5
+  flutter_native_splash: ^2.4.3
 
 dev_dependencies:
   flutter_test:
@@ -32,3 +33,11 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+
+flutter_native_splash:
+  color: "#1c1c1c"
+  image: assets/images/logo_square.png
+  android_12:
+    image: assets/images/logo_square.png
+  android: true
+  ios: true
