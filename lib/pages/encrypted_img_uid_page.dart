@@ -8,7 +8,7 @@ import '../services/encryption.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:encrypt/encrypt.dart'
-as encrypt; // Import the encryption service
+    as encrypt; // Import the encryption service
 import 'package:http/http.dart' as http;
 
 class EncryptedImgUIDPage extends StatefulWidget {
@@ -154,7 +154,7 @@ wIDAQAB
 
       // 2. Encrypt the concatenated data (device info + image data) using AES
       final encrypter =
-      encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
+          encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
       final encryptedData = encrypter.encrypt(dataToEncrypt, iv: xor_iv);
 
       print("Encrypted data (AES) length: ${encryptedData.bytes.length}");
@@ -246,7 +246,7 @@ wIDAQAB
   Map<String, String> _handleData() {
     return {
       "encryptionBlob":
-      "${widget.deviceInfo}~${base64Encode(widget.image.readAsBytesSync())}",
+          "${widget.deviceInfo}~${base64Encode(widget.image.readAsBytesSync())}",
       "aesKey": aeskey,
     };
   }
