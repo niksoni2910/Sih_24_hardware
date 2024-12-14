@@ -21,6 +21,9 @@ dependencies:
   basic_utils: ^5.7.0
   rsa_encrypt: ^2.0.0
   http: ^1.2.2
+  camera: ^0.11.0+2
+#  google_ml_kit: ^0.19.0
+#  fluttertoast: ^8.2.10
 
 dev_dependencies:
   flutter_test:
