@@ -1,6 +1,7 @@
 
 import 'dart:io' ;
 
+import 'package:app_integrity_checker/app_integrity_checker.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 import '../services/ecc_channel.dart';
@@ -43,6 +44,8 @@ z8l6U3XJwF1KKMEni8v0Vdd0q6orffvFJh/FSPwZkJ7yn7OrU4wJg2pXUSOhjF9c
 vYO2hZT2r0vhdYEnQehHD8QjMckChFZEK69t6FgbsNjbbR5pM25AWxHg5HOf+ZgF
 wIDAQAB
 -----END PUBLIC KEY-----''';
+  String checksum='';
+  String signature='';
 
   final String apiUrl = "http://192.168.137.73:3000/api/send-data"; // Replace with your API endpoint
 
@@ -67,6 +70,7 @@ wIDAQAB
         "encryptedKey": encryptedKeyString,
         "deviceInfo": widget.deviceInfo,
         "deviceInfoSign": _encryptedHash,
+        "appSign":signature,
       };
       // print(payload.toString());
 
@@ -111,6 +115,14 @@ wIDAQAB
     super.initState();
     _computeHashAndEncrypt();
     _initializeData();
+    _getSignature();
+  }
+
+  Future<void> _getSignature() async{
+    String checksum = await AppIntegrityChecker.getchecksum() ?? "checksum retrieval failed";     //retrieve app checksum value in SHA256
+    String signature = await AppIntegrityChecker.getsignature() ?? "signature retrieval failed";
+    print("checksum $checksum");
+    print("signature $signature");
   }
 
 
