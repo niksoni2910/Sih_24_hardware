@@ -68,7 +68,10 @@ wIDAQAB
         "deviceInfo": widget.deviceInfo,
         "deviceInfoSign": _encryptedHash,
       };
-      print(payload.toString());
+      // print(payload.toString());
+
+
+
 
       // Make the API POST request
       final response = await http.post(
@@ -79,39 +82,27 @@ wIDAQAB
         body: jsonEncode(payload),
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Data submitted successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      // Delay the invocation of the SnackBar by 5 seconds
+      Future.delayed(Duration(seconds: 5), () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Data submitted successfully!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3), // Optional: Set how long it should be visible
+          ),
+        );
+      });
 
-      // if (response.statusCode == 200) {
-      //   // Successful response
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(
-      //       content: Text('Data submitted successfully!'),
-      //       backgroundColor: Colors.green,
-      //     ),
-      //   );
-      // } else {
-      //   // Handle error
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(
-      //       content: Text('Failed to submit data. Status code: ${response.statusCode}'),
-      //       backgroundColor: Colors.red,
-      //     ),
-      //   );
-      // }
+
     } catch (e) {
       // Handle exceptions
-      print('DEBUG: Error while submitting data: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error submitting data: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      // print('DEBUG: Error while submitting data: $e');
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Error submitting data: $e'),
+      //     backgroundColor: Colors.red,
+      //   ),
+      // );
     }
   }
 
