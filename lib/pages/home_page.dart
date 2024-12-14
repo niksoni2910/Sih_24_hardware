@@ -117,19 +117,16 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Row(
-          children: [
-            Text(
-              'VishwAadhar',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-              ),
-            ),
-          ],
+        title: const Text(
+          'VishwAadhar',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            // fontSize: 24,
+          ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(
@@ -143,12 +140,28 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
-            child: Text(
-              'Secure Your Device Identity',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
+            padding: const EdgeInsets.only(top: 20),
+            child: Center(
+              child: Text(
+                'Empowering Secure Identity',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5),
+            child: Center(
+              child: Text(
+                'Right in Your Hands!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
               ),
             ),
           ),
@@ -157,7 +170,7 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (_selectedImage != null)
+                  _selectedImage != null?
                     Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: ClipRRect(
@@ -169,7 +182,7 @@ class _HomePageState extends State<HomePage> {
                           fit: BoxFit.cover,
                         ),
                       ),
-                    ),
+                    ):Image(image: AssetImage('assets/images/logo_square.png'),height: 200,width: 200,),
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: _captureImage,
