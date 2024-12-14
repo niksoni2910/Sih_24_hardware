@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
 import '../services/ecc_channel.dart';
@@ -7,6 +6,7 @@ import '../pages/key_info_page.dart';
 import '../pages/encrypted_img_uid_page.dart';
 import '../widgets/device_info_sheet.dart';
 import '../services/device_info_service.dart';
+import 'face_detection.dart'; // Import CameraScreen
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,7 +17,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   File? _selectedImage;
-  final ImagePicker _picker = ImagePicker();
   String _publicKey = '';
   String _deviceInfoString = '';
   String _combinedHash = '';
@@ -37,13 +36,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _captureImage() async {
-    final XFile? image = await _picker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
+    final result = await Navigator.push<File?>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CameraScreen(), // Navigate to CameraScreen
+      ),
     );
-    if (image != null) {
+
+    if (result != null) {
       setState(() {
-        _selectedImage = File(image.path);
+        _selectedImage = result; // Update the selected image
       });
     }
   }
@@ -121,7 +123,6 @@ class _HomePageState extends State<HomePage> {
           'VishwAadhar',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            // fontSize: 24,
           ),
         ),
         backgroundColor: Colors.white,
@@ -170,23 +171,31 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _selectedImage != null?
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.file(
-                          _selectedImage!,
-                          height: 200,
-                          width: 200,
-                          fit: BoxFit.cover,
-                        ),
+                  _selectedImage != null
+                      ? Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(
+                        _selectedImage!,
+                        height: 200,
+                        width: 200,
+                        fit: BoxFit.cover,
                       ),
-                    ):Image(image: AssetImage('assets/images/logo_square.png'),height: 200,width: 200,),
+                    ),
+                  )
+                      : Image(
+                    image: AssetImage('assets/images/logo_square.png'),
+                    height: 200,
+                    width: 200,
+                  ),
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: _captureImage,
-                    icon: const Icon(Icons.face,color: Colors.white,),
+                    icon: const Icon(
+                      Icons.face,
+                      color: Colors.white,
+                    ),
                     label: const Text('Take Selfie to Authenticate'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
@@ -202,8 +211,13 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 20),
                     ElevatedButton.icon(
                       onPressed: _submitImage,
-                      icon: const Icon(Icons.info_outline,color: Colors.white,),
-                      label: const Text('Verification Details',),
+                      icon: const Icon(
+                        Icons.info_outline,
+                        color: Colors.white,
+                      ),
+                      label: const Text(
+                        'Verification Details',
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.indigo,
                         foregroundColor: Colors.white,
@@ -215,7 +229,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
                   ],
                 ],
               ),
