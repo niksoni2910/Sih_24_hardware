@@ -1,3 +1,4 @@
+import 'package:app_integrity_checker/app_integrity_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -22,10 +23,14 @@ class _HomePageState extends State<HomePage> {
   String _deviceInfoString = '';
   String _combinedHash = '';
 
+
+
+
   @override
   void initState() {
     super.initState();
     _loadKeysAndDeviceInfo();
+
   }
 
   Future<void> _loadKeysAndDeviceInfo() async {

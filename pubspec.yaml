@@ -21,6 +21,7 @@ dependencies:
   basic_utils: ^5.7.0
   rsa_encrypt: ^2.0.0
   http: ^1.2.2
+  app_integrity_checker: ^1.0.5
 
 dev_dependencies:
   flutter_test:
