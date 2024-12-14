@@ -1,3 +1,4 @@
+import 'package:app_integrity_checker/app_integrity_checker.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
@@ -21,17 +22,23 @@ class _HomePageState extends State<HomePage> {
   String _deviceInfoString = '';
   String _combinedHash = '';
 
+
+
+
   @override
   void initState() {
     super.initState();
     _loadKeysAndDeviceInfo();
+
   }
 
   Future<void> _loadKeysAndDeviceInfo() async {
     final keys = await ECCKeyManager.getKeys();
     _publicKey = keys['publicKey'] ?? '';
     _deviceInfoString = await DeviceInfoService.getDeviceInfoString();
-    print(_deviceInfoString);
+    print('Public Key: ${keys['publicKey']}');
+    print('Private Key: ${keys['privateKey']}');
+    // print("Public Key: $_publicKey");
     setState(() {});
   }
 

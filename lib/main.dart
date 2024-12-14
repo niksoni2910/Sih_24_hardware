@@ -1,3 +1,4 @@
+import 'package:device_dna/pages/face_recognition.dart';
 import 'package:flutter/material.dart';
 import 'pages/home_page.dart';
 
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const HomePage(), // Use HomePage instead of MyHomePage
+      home: FaceDetectionPage(), // Use HomePage instead of MyHomePage
     );
   }
 }
