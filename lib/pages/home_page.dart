@@ -7,6 +7,8 @@ import '../pages/encrypted_img_uid_page.dart';
 import '../widgets/device_info_sheet.dart';
 import '../services/device_info_service.dart';
 import 'face_detection.dart'; // Import CameraScreen
+import 'face_detection_ios.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -39,7 +41,7 @@ class _HomePageState extends State<HomePage> {
     final result = await Navigator.push<File?>(
       context,
       MaterialPageRoute(
-        builder: (context) => CameraScreen(), // Navigate to CameraScreen
+        builder: (context) => Platform.isAndroid? CameraScreen():CameraScreenIOS(), // Navigate to CameraScreen
       ),
     );
 
