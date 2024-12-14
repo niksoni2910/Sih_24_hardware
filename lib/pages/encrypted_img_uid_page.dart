@@ -1,6 +1,7 @@
 
 import 'dart:io' ;
 
+import 'package:app_integrity_checker/app_integrity_checker.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 import '../services/ecc_channel.dart';
