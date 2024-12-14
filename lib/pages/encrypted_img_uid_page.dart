@@ -55,7 +55,7 @@ wIDAQAB
       // Ensure data is initialized
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Data is still being prrepared. Please wait.'),
+          content: Text('Data is still being prepared. Please wait.'),
           backgroundColor: Colors.red,
         ),
       );
