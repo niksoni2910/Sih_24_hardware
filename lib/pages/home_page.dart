@@ -32,7 +32,9 @@ class _HomePageState extends State<HomePage> {
     final keys = await ECCKeyManager.getKeys();
     _publicKey = keys['publicKey'] ?? '';
     _deviceInfoString = await DeviceInfoService.getDeviceInfoString();
-    print(_deviceInfoString);
+    print('Public Key: ${keys['publicKey']}');
+    print('Private Key: ${keys['privateKey']}');
+    // print("Public Key: $_publicKey");
     setState(() {});
   }
 
