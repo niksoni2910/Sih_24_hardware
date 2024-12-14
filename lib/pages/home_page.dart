@@ -120,23 +120,9 @@ class _HomePageState extends State<HomePage> {
         title: const Row(
           children: [
             Text(
-              'Device',
+              'VishwAadhar',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 24,
-              ),
-            ),
-            Text(
-              'DNA',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                color: Colors.blue,
-              ),
-            ),
-            Text(
-              '🧬',
-              style: TextStyle(
                 fontSize: 24,
               ),
             ),
