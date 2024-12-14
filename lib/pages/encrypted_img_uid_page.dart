@@ -1,13 +1,14 @@
+import 'dart:io';
 
-import 'dart:io' ;
-
+import 'package:app_integrity_checker/app_integrity_checker.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 import '../services/ecc_channel.dart';
 import '../services/encryption.dart';
 import 'dart:convert';
-import 'package:flutter/material.dart' ;
-import 'package:encrypt/encrypt.dart' as encrypt;// Import the encryption service
+import 'package:flutter/material.dart';
+import 'package:encrypt/encrypt.dart'
+    as encrypt; // Import the encryption service
 import 'package:http/http.dart' as http;
 
 class EncryptedImgUIDPage extends StatefulWidget {
@@ -15,9 +16,11 @@ class EncryptedImgUIDPage extends StatefulWidget {
   final File image;
   final String publicKey;
 
-  const EncryptedImgUIDPage({super.key,
+  const EncryptedImgUIDPage({
+    super.key,
     required this.deviceInfo,
-    required this.image, required this.publicKey,
+    required this.image,
+    required this.publicKey,
   });
 
   @override
@@ -25,13 +28,16 @@ class EncryptedImgUIDPage extends StatefulWidget {
 }
 
 class _EncryptedImgUIDPageState extends State<EncryptedImgUIDPage> {
+  String checksum = '';
+  String signature = '';
+  String iv = '';
   String _digest = '';
   String _encryptedHash = '';
   bool _hashCopied = false;
   final EncryptionService _encryptionService = EncryptionService();
   bool isLoading = true;
-  String  imageBase64 = "";
-  String encryptedDataString = "";  // This is the AES-encrypted data
+  String imageBase64 = "";
+  String encryptedDataString = ""; // This is the AES-encrypted data
   String encryptedKeyString = "";
   String devicePublicKey = "";
   String rsaPublicKeyPem = '''-----BEGIN PUBLIC KEY-----
@@ -44,7 +50,8 @@ vYO2hZT2r0vhdYEnQehHD8QjMckChFZEK69t6FgbsNjbbR5pM25AWxHg5HOf+ZgF
 wIDAQAB
 -----END PUBLIC KEY-----''';
 
-  final String apiUrl = "http://192.168.137.73:3000/api/send-data"; // Replace with your API endpoint
+  final String apiUrl =
+      "http://172.20.10.12:3000/api/send-data"; // Replace with your API endpoint
 
   // Function to call the API
   Future<void> _submitData() async {
@@ -67,11 +74,18 @@ wIDAQAB
         "encryptedKey": encryptedKeyString,
         "deviceInfo": widget.deviceInfo,
         "deviceInfoSign": _encryptedHash,
+        "appSign": signature,
+        "iv": iv,
       };
       // print(payload.toString());
-
-
-
+      print("API URL: $apiUrl");
+      // print("Payload: $payload");
+      print("App Sign: $signature");
+      print("IV: $iv");
+      print("Device Info: ${widget.deviceInfo}");
+      print("Device Public Key: $devicePublicKey");
+      print("Encrypted Key: $encryptedKeyString");
+      print("Encrypted Data: $encryptedDataString");
 
       // Make the API POST request
       final response = await http.post(
@@ -88,12 +102,11 @@ wIDAQAB
           SnackBar(
             content: Text('Data submitted successfully!'),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 3), // Optional: Set how long it should be visible
+            duration: Duration(
+                seconds: 3), // Optional: Set how long it should be visible
           ),
         );
       });
-
-
     } catch (e) {
       // Handle exceptions
       // print('DEBUG: Error while submitting data: $e');
@@ -110,10 +123,17 @@ wIDAQAB
   void initState() {
     super.initState();
     _computeHashAndEncrypt();
+    _getSignature();
     _initializeData();
   }
 
-
+  Future<void> _getSignature() async {
+    // checksum = await AppIntegrityChecker.getchecksum() ?? "checksum retrieval failed";     //retrieve app checksum value in SHA256
+    signature = await AppIntegrityChecker.getsignature() ??
+        "signature retrieval failed"; //retrieve app signature value
+    // print("checksum $checksum");
+    print("signature $signature");
+  }
 
   Future<void> _initializeData() async {
     try {
@@ -128,11 +148,12 @@ wIDAQAB
 
       // 1. Generate a random AES symmetric key
       final key = encrypt.Key.fromSecureRandom(32); // AES-256
-      final iv = encrypt.IV.fromLength(16); // AES block size (128 bits)
+      final xor_iv = encrypt.IV.fromLength(16); // AES block size (128 bits)
 
       // 2. Encrypt the concatenated data (device info + image data) using AES
-      final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
-      final encryptedData = encrypter.encrypt(dataToEncrypt, iv: iv);
+      final encrypter =
+          encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
+      final encryptedData = encrypter.encrypt(dataToEncrypt, iv: xor_iv);
 
       print("Encrypted data (AES) length: ${encryptedData.bytes.length}");
       print(encryptedData);
@@ -149,17 +170,19 @@ wIDAQAB
 
       // Store encrypted data and key
       setState(() {
-        encryptedDataString = encryptedData.base64;  // This is the AES-encrypted data
-        encryptedKeyString = encryptedKey.base64;    // This is the RSA-encrypted AES key
+        encryptedDataString =
+            encryptedData.base64; // This is the AES-encrypted data
+        encryptedKeyString =
+            encryptedKey.base64; // This is the RSA-encrypted AES key
         imageBase64 = imgBase64;
-        isLoading=false;
+        isLoading = false;
         devicePublicKey = keys['publicKey'] ?? '';
+        iv = xor_iv.base64;
       });
-      
+
       print('DEBUG: Encryption completed');
       print('DEBUG: Encrypted data length: ${encryptedDataString.length}');
       print('DEBUG: Encrypted AES key length: ${encryptedKeyString.length}');
-
     } catch (e) {
       print('DEBUG: Error in initialization:');
       print(e);
@@ -256,14 +279,16 @@ wIDAQAB
                 _buildInfoCard(
                   'Device + Image Data',
                   _buildCopyableText(
-                      "${widget.deviceInfo}\n\n${imageBase64.isNotEmpty ? imageBase64.substring(0,300) : ""}...", 'Device + Image Data copied to clipboard'),
+                      "${widget.deviceInfo}\n\n${imageBase64.isNotEmpty ? imageBase64.substring(0, 300) : ""}...",
+                      'Device + Image Data copied to clipboard'),
                 ),
 
                 const SizedBox(height: 20),
                 _buildInfoCard(
                   'Encrypted(Image + Device)',
                   _buildCopyableText(
-                      "${encryptedDataString.isNotEmpty ? encryptedDataString.substring(0,300) : ""}...", 'Encrypted hash copied to clipboard'),
+                      "${encryptedDataString.isNotEmpty ? encryptedDataString.substring(0, 300) : ""}...",
+                      'Encrypted hash copied to clipboard'),
                 ),
 
                 const SizedBox(height: 20),
@@ -281,7 +306,10 @@ wIDAQAB
 
                 ElevatedButton.icon(
                   onPressed: _submitData,
-                  icon: const Icon(Icons.arrow_forward, color: Colors.white,),
+                  icon: const Icon(
+                    Icons.arrow_forward,
+                    color: Colors.white,
+                  ),
                   label: const Text('Submit'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
