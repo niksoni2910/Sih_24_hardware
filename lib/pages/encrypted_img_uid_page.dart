@@ -28,6 +28,7 @@ class EncryptedImgUIDPage extends StatefulWidget {
 }
 
 class _EncryptedImgUIDPageState extends State<EncryptedImgUIDPage> {
+  String aeskey = '';
   String checksum = '';
   String signature = '';
   String iv = '';
@@ -54,7 +55,7 @@ wIDAQAB
       "http://172.20.10.12:3000/api/send-data"; // Replace with your API endpoint
 
   // Function to call the API
-  Future<void> _submitData() async {
+  Future<void> _submitData(Map<String, String> hardwareAccessIdentifier) async {
     if (isLoading) {
       // Ensure data is initialized
       ScaffoldMessenger.of(context).showSnackBar(
@@ -76,6 +77,7 @@ wIDAQAB
         "deviceInfoSign": _encryptedHash,
         "appSign": signature,
         "iv": iv,
+        "hardwareAccessIdentifier": hardwareAccessIdentifier,
       };
       // print(payload.toString());
       print("API URL: $apiUrl");
@@ -178,6 +180,7 @@ wIDAQAB
         isLoading = false;
         devicePublicKey = keys['publicKey'] ?? '';
         iv = xor_iv.base64;
+        aeskey = key.base64;
       });
 
       print('DEBUG: Encryption completed');
@@ -238,6 +241,14 @@ wIDAQAB
         });
       }
     });
+  }
+
+  Map<String, String> _handleData() {
+    return {
+      "encryptionBlob":
+          "${widget.deviceInfo}~${base64Encode(widget.image.readAsBytesSync())}",
+      "aesKey": aeskey,
+    };
   }
 
   @override
@@ -305,7 +316,9 @@ wIDAQAB
                 const SizedBox(height: 20),
 
                 ElevatedButton.icon(
-                  onPressed: _submitData,
+                  onPressed: () {
+                    _submitData(_handleData());
+                  },
                   icon: const Icon(
                     Icons.arrow_forward,
                     color: Colors.white,
