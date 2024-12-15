@@ -304,14 +304,6 @@ wIDAQAB
     });
   }
 
-  Map<String, String> _handleData() {
-    return {
-      "encryptionBlob": "${widget.deviceInfo}",
-      "encryptedBase64": base64Encode(widget.image.readAsBytesSync()),
-      "aesKey": aeskey,
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
@@ -375,11 +367,12 @@ wIDAQAB
                   onPressed: isSubmitting
                       ? null
                       : () {
-                          _submitData(_handleData());
+                          _submitData();
                         },
                   icon: isSubmitting
                       ? const CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         )
                       : const Icon(
                           Icons.arrow_forward,
