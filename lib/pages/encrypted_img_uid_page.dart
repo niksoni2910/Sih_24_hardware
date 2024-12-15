@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:app_integrity_checker/app_integrity_checker.dart';
 import 'package:crypto/crypto.dart';
+import 'package:device_dna/services/build_lottie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -106,10 +107,17 @@ wIDAQAB
       // Handle the immediate response (data submission success)
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
+        print(responseData);
         bool isAuthenticated = responseData['isAuth'];
 
         if (isAuthenticated) {
-          _showAuthenticationSuccess();
+          // _showAuthenticationSuccess();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Lootie(),
+            ),
+          );
         } else {
           _showAuthenticationFailure();
         }

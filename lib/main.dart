@@ -1,3 +1,4 @@
+import 'package:device_dna/services/build_lottie.dart';
 import 'package:flutter/material.dart';
 import 'pages/home_page.dart';
 
