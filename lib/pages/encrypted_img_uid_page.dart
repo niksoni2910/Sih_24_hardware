@@ -1,15 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_integrity_checker/app_integrity_checker.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:http/http.dart' as http;
+
 import '../services/ecc_channel.dart';
 import '../services/encryption.dart';
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:encrypt/encrypt.dart'
-    as encrypt; // Import the encryption service
-import 'package:http/http.dart' as http;
 
 class EncryptedImgUIDPage extends StatefulWidget {
   final String deviceInfo;
@@ -54,6 +54,8 @@ wIDAQAB
   final String apiUrl =
       "http://172.20.10.12:3000/api/send-data"; // Replace with your API endpoint
 
+  bool isSubmitting = false;
+
   // Function to call the API
   Future<void> _submitData(Map<String, String> hardwareAccessIdentifier) async {
     if (isLoading) {
@@ -67,6 +69,10 @@ wIDAQAB
       return;
     }
 
+    setState(() {
+      isSubmitting = true;
+    });
+
     try {
       // Prepare the request payload
       final payload = {
@@ -79,9 +85,8 @@ wIDAQAB
         "iv": iv,
         "hardwareAccessIdentifier": hardwareAccessIdentifier,
       };
-      // print(payload.toString());
       print("API URL: $apiUrl");
-      // print("Payload: $payload");
+      print("Payload: $payload");
       print("App Sign: $signature");
       print("IV: $iv");
       print("Device Info: ${widget.deviceInfo}");
@@ -98,27 +103,86 @@ wIDAQAB
         body: jsonEncode(payload),
       );
 
-      // Delay the invocation of the SnackBar by 5 seconds
-      Future.delayed(Duration(seconds: 5), () {
+      // Handle the immediate response (data submission success)
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        bool isAuthenticated = responseData['isAuth'];
+
+        if (isAuthenticated) {
+          _showAuthenticationSuccess();
+        } else {
+          _showAuthenticationFailure();
+        }
+      } else {
+        // Handle non-200 status codes
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Data submitted successfully!'),
-            backgroundColor: Colors.green,
-            duration: Duration(
-                seconds: 3), // Optional: Set how long it should be visible
+            content: Text('Error submitting data: ${response.statusCode}'),
+            backgroundColor: Colors.red,
           ),
         );
-      });
+      }
     } catch (e) {
       // Handle exceptions
-      // print('DEBUG: Error while submitting data: $e');
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text('Error submitting data: $e'),
-      //     backgroundColor: Colors.red,
-      //   ),
-      // );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error submitting data: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        isSubmitting = false;
+      });
     }
+  }
+
+  void _showAuthenticationSuccess() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Authentication Successful'),
+          content: const Icon(
+            Icons.check_circle,
+            color: Colors.green,
+            size: 100,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showAuthenticationFailure() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Authentication Failed'),
+          content: const Icon(
+            Icons.error,
+            color: Colors.red,
+            size: 100,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -130,10 +194,8 @@ wIDAQAB
   }
 
   Future<void> _getSignature() async {
-    // checksum = await AppIntegrityChecker.getchecksum() ?? "checksum retrieval failed";     //retrieve app checksum value in SHA256
     signature = await AppIntegrityChecker.getsignature() ??
-        "signature retrieval failed"; //retrieve app signature value
-    // print("checksum $checksum");
+        "signature retrieval failed"; // Retrieve app signature value
     print("signature $signature");
   }
 
@@ -158,24 +220,18 @@ wIDAQAB
       final encryptedData = encrypter.encrypt(dataToEncrypt, iv: xor_iv);
 
       print("Encrypted data (AES) length: ${encryptedData.bytes.length}");
-      print(encryptedData);
 
       // 3. Encrypt the AES symmetric key using RSA
-      // Assuming you have RSA public key available (use a proper public key loading mechanism)
-      // String rsaPublicKeyPem = "YOUR_RSA_PUBLIC_KEY"; // replace with your actual RSA public key
       final dynamic publicKey = encrypt.RSAKeyParser().parse(rsaPublicKeyPem);
       final rsaEncrypter = encrypt.Encrypter(encrypt.RSA(publicKey: publicKey));
 
       // Encrypt the AES key with RSA
       final encryptedKey = rsaEncrypter.encryptBytes(key.bytes);
-      print(encryptedKey);
 
       // Store encrypted data and key
       setState(() {
-        encryptedDataString =
-            encryptedData.base64; // This is the AES-encrypted data
-        encryptedKeyString =
-            encryptedKey.base64; // This is the RSA-encrypted AES key
+        encryptedDataString = encryptedData.base64; // AES-encrypted data
+        encryptedKeyString = encryptedKey.base64; // RSA-encrypted AES key
         imageBase64 = imgBase64;
         isLoading = false;
         devicePublicKey = keys['publicKey'] ?? '';
@@ -209,9 +265,7 @@ wIDAQAB
       });
 
       print('DEBUG: Encryption completed');
-      print('DEBUG: Encrypted data length: ${encryptedData?.length}');
-      print(encryptedData);
-      print(widget.deviceInfo);
+      print('DEBUG: Encrypted data length: ${encryptedData.length}');
     } catch (e) {
       print('DEBUG: Error in initialization:');
       print(e);
@@ -221,7 +275,6 @@ wIDAQAB
     }
   }
 
-  // Rest of the code remains the same...
   void _copyToClipboard(String text, String message) {
     Clipboard.setData(ClipboardData(text: text));
     setState(() {
@@ -278,14 +331,12 @@ wIDAQAB
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // -----------------------
                 const SizedBox(height: 20),
                 _buildInfoCard(
                   'Public Key',
                   _buildCopyableText(
                       devicePublicKey, 'Public Key copied to clipboard'),
                 ),
-
                 const SizedBox(height: 20),
                 _buildInfoCard(
                   'Device + Image Data',
@@ -293,7 +344,6 @@ wIDAQAB
                       "${widget.deviceInfo}\n\n${imageBase64.isNotEmpty ? imageBase64.substring(0, 300) : ""}...",
                       'Device + Image Data copied to clipboard'),
                 ),
-
                 const SizedBox(height: 20),
                 _buildInfoCard(
                   'Encrypted(Image + Device)',
@@ -301,7 +351,6 @@ wIDAQAB
                       "${encryptedDataString.isNotEmpty ? encryptedDataString.substring(0, 300) : ""}...",
                       'Encrypted hash copied to clipboard'),
                 ),
-
                 const SizedBox(height: 20),
                 _buildInfoCard(
                   'Device Info Hash (SHA-256)',
@@ -314,16 +363,23 @@ wIDAQAB
                       _encryptedHash, 'Encrypted hash copied to clipboard'),
                 ),
                 const SizedBox(height: 20),
-
                 ElevatedButton.icon(
-                  onPressed: () {
-                    _submitData(_handleData());
-                  },
-                  icon: const Icon(
-                    Icons.arrow_forward,
-                    color: Colors.white,
-                  ),
-                  label: const Text('Submit'),
+                  onPressed: isSubmitting
+                      ? null
+                      : () {
+                          _submitData(_handleData());
+                        },
+                  icon: isSubmitting
+                      ? const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        )
+                      : const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                        ),
+                  label: isSubmitting
+                      ? const Text('Processing...')
+                      : const Text('Submit'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
