@@ -19,6 +19,16 @@ A Flutter application that creates a unique device identifier by combining:
    - ECC key pair generation
    - SHA-256 hashing for combined data
 
+## Team Members
+
+
+1. [Amir Zakaria](https://github.com/huntingcodes-001)
+2. [Aishwarya Ravi](https://github.com/AishwaryaRavi07)
+3. [Nikhil Soni](https://github.com/niksoni2910)
+4. [Atharva Kshirsagar](https://github.com/pranavjanjani)
+5. [Muhammad Sheikh](https://github.com/muhd360)
+6. [Parth Agarwal](https://github.com/Aadit0122)
+
 ## Setup
 ```bash
 flutter pub get
